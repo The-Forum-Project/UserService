@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS User (
     active          BOOLEAN,
     dateJoined      DATETIME,
     type            INT,
-    status          INT
+    status          INT,
+    code            VARCHAR(6)
 );
 
 -- add sample users to table
