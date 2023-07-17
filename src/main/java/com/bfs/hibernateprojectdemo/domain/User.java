@@ -42,4 +42,7 @@ public class User {
 
     @Column(nullable = false)
     private Integer status;
+
+    @Column(nullable = false, length = 6)
+    private String code;
 }
