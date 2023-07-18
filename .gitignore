@@ -23,5 +23,8 @@
 hs_err_pid*
 replay_pid*
 
-# config properties
-*.properties
+# Ignore application.properties everywhere
+**/application.properties
+
+# Ignore .DS_Store everywhere
+**/.DS_Store
