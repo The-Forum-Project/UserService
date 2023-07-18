@@ -1,15 +1,22 @@
 package com.bfs.hibernateprojectdemo.controller;
 
 import com.bfs.hibernateprojectdemo.domain.User;
+import com.bfs.hibernateprojectdemo.dto.CodeRequest;
+import com.bfs.hibernateprojectdemo.dto.EmailRequest;
+import com.bfs.hibernateprojectdemo.dto.SimpleMessage;
 import com.bfs.hibernateprojectdemo.dto.responses.IdUserResponse;
 import com.bfs.hibernateprojectdemo.service.UserService;
+import com.bfs.hibernateprojectdemo.util.SerializeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin
@@ -18,8 +25,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    public UserController(UserService userService, RabbitTemplate rabbitTemplate) {
         this.userService = userService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @GetMapping("/{id}")
@@ -58,6 +69,39 @@ public class UserController {
                             .build()
             );
         }
+    }
+
+    @PatchMapping("verify/email")
+    public ResponseEntity<String> produceDirect(@Valid @RequestBody EmailRequest request,
+                                                @RequestParam String routingKey){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
+        SimpleMessage newMessage = SimpleMessage.builder()
+                .email(request.getEmail())
+                .code(userService.updateCode(userId))
+                .build();
+
+        String jsonMessage = SerializeUtil.serialize(newMessage);
+
+        rabbitTemplate.convertAndSend("demo.direct", routingKey, jsonMessage);
+
+        return ResponseEntity.ok("Email Sent");
+    }
+
+    @PostMapping("verify/code")
+    public ResponseEntity<String> verifyCode(@Valid @RequestBody CodeRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
+        String email = request.getEmail();
+        String code = request.getCode();
+        Boolean success = userService.updateEmail(userId, email, code);
+        if (!success) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("The code is incorrect");
+        }
+        return ResponseEntity.ok("Verified Successfully");
     }
 
 }
