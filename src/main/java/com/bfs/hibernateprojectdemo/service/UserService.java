@@ -31,4 +31,14 @@ public class UserService {
         return code;
     }
 
+    @Transactional
+    public Boolean updateEmail(Long userId, String email, String code) {
+        User user = getUserById(userId);
+        if (!user.getCode().equals(code)) {
+            return false;
+        }
+        user.setEmail(email);
+        return true;
+    }
+
 }

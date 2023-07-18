@@ -1,6 +1,7 @@
 package com.bfs.hibernateprojectdemo.controller;
 
 import com.bfs.hibernateprojectdemo.domain.User;
+import com.bfs.hibernateprojectdemo.dto.CodeRequest;
 import com.bfs.hibernateprojectdemo.dto.EmailRequest;
 import com.bfs.hibernateprojectdemo.dto.SimpleMessage;
 import com.bfs.hibernateprojectdemo.dto.responses.IdUserResponse;
@@ -76,7 +77,6 @@ public class UserController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = (Long) authentication.getPrincipal();
-        System.out.println(userId);
 
         SimpleMessage newMessage = SimpleMessage.builder()
                 .email(request.getEmail())
@@ -88,6 +88,20 @@ public class UserController {
         rabbitTemplate.convertAndSend("demo.direct", routingKey, jsonMessage);
 
         return ResponseEntity.ok("Email Sent");
+    }
+
+    @PostMapping("verify/code")
+    public ResponseEntity<String> verifyCode(@Valid @RequestBody CodeRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
+        String email = request.getEmail();
+        String code = request.getCode();
+        Boolean success = userService.updateEmail(userId, email, code);
+        if (!success) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("The code is incorrect");
+        }
+        return ResponseEntity.ok("Verified Successfully");
     }
 
 }
