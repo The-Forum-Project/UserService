@@ -23,4 +23,10 @@ public class UserService {
         return userDao.getUserById(id);
     }
 
+    @Transactional
+    public Boolean updateUser(User updatedUser) { return userDao.updateUser(updatedUser); }
+
+    @Transactional
+    public Boolean deleteUser(User user) { return userDao.deleteUser(user); }
+
 }

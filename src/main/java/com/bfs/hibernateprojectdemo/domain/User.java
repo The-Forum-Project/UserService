@@ -40,9 +40,9 @@ public class User {
     @Column(nullable = false)
     private Integer type;
 
-    @Column(nullable = false)
-    private Integer status;
-
     @Column(nullable = false, length = 6)
     private String code;
+
+    @Column(nullable = false, length = 255)
+    private String profileImageURL;
 }
