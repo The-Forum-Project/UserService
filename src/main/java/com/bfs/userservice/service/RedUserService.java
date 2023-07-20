@@ -31,6 +31,9 @@ public class RedUserService {
     public Boolean deleteUser(User user) { return userDao.deleteUser(user); }
 
     @Transactional
+    public Boolean promoteUser(User user) { return userDao.promoteUser(user); }
+
+    @Transactional
     public String updateCode(Long userId) {
         String code = VerificationCodeGenerator.generateCode();
         userDao.updateUserCode(userId, code);

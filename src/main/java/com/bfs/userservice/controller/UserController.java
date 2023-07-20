@@ -63,6 +63,12 @@ public class UserController {
                             .message("User does not exist!")
                             .build()
             );
+        } else if (user.getActive() == false) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    IdUserResponse.builder()
+                            .message("User does not exist!")
+                            .build()
+            );
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(
                     IdUserResponse.builder()
@@ -166,6 +172,42 @@ public class UserController {
 
         } else {
             message = "Success! The User was deleted.";
+            messageResponse = MessageResponse.builder()
+                    .message(message)
+                    .build();
+            return ResponseEntity.status(HttpStatus.OK).body(messageResponse);
+        }
+
+    }
+
+    @PutMapping("/{id}/promote")
+    @ResponseBody
+    public ResponseEntity<MessageResponse> promoteUser(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
+
+        if (authorities.stream().noneMatch(authority -> authority.getAuthority().equals("super"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    MessageResponse.builder()
+                            .message("You are not authorized to promote this user")
+                            .build()
+            );
+        }
+
+        User user = redUserService.getUserById(id);
+        Boolean promoteSuccess = redUserService.promoteUser(user);
+
+        String message;
+        MessageResponse messageResponse;
+        if (!promoteSuccess) {
+            message = "User does not exist!";
+            messageResponse = MessageResponse.builder()
+                    .message(message)
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
+
+        } else {
+            message = "Success! The User was promoted.";
             messageResponse = MessageResponse.builder()
                     .message(message)
                     .build();
