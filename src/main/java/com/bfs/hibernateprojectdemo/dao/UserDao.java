@@ -3,6 +3,8 @@ package com.bfs.hibernateprojectdemo.dao;
 import com.bfs.hibernateprojectdemo.domain.User;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -65,6 +67,15 @@ public class UserDao extends AbstractHibernateDao<User> {
 
         }
 
+    }
+
+    public void updateUserCode(Long userId, String code) {
+        Session session = this.getCurrentSession();
+        String hql = "UPDATE User SET code = :newCode WHERE userId = :userId";
+        Query query = session.createQuery(hql);
+        query.setParameter("newCode", code);
+        query.setParameter("userId", userId);
+        query.executeUpdate();
     }
 
 }
