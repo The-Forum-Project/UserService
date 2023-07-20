@@ -2,8 +2,7 @@ package com.bfs.userservice.controller;
 
 import com.bfs.userservice.domain.User;
 import com.bfs.userservice.dto.requests.UpdateRequest;
-import com.bfs.userservice.dto.CodeRequest;
-import com.bfs.userservice.dto.EmailRequest;
+import com.bfs.userservice.dto.requests.CodeRequest;
 import com.bfs.userservice.dto.SimpleMessage;
 import com.bfs.userservice.dto.responses.IdUserResponse;
 import com.bfs.userservice.dto.responses.MessageResponse;
@@ -217,14 +216,23 @@ public class UserController {
     }
 
     @PatchMapping("verify/email")
-    public ResponseEntity<String> produceDirect(@Valid @RequestBody EmailRequest request,
-                                                @RequestParam String routingKey){
+    public ResponseEntity<MessageResponse> produceDirect(@RequestParam String routingKey){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = (Long) authentication.getPrincipal();
 
+        User userToVerify = redUserService.getUserById(userId);
+
+        if (userToVerify == null) {
+            String message = "User does not exist!";
+            MessageResponse messageResponse = MessageResponse.builder()
+                    .message(message)
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
+        }
+
         SimpleMessage newMessage = SimpleMessage.builder()
-                .email(request.getEmail())
+                .email(userToVerify.getEmail())
                 .code(redUserService.updateCode(userId))
                 .build();
 
@@ -232,21 +240,45 @@ public class UserController {
 
         rabbitTemplate.convertAndSend("demo.direct", routingKey, jsonMessage);
 
-        return ResponseEntity.ok("Email Sent");
+        String message = "Success! A email should be sent to the user.";
+        MessageResponse messageResponse = MessageResponse.builder()
+                .message(message)
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(messageResponse);
     }
 
     @PostMapping("verify/code")
-    public ResponseEntity<String> verifyCode(@Valid @RequestBody CodeRequest request){
+    public ResponseEntity<MessageResponse> verifyCode(@Valid @RequestBody CodeRequest request){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = (Long) authentication.getPrincipal();
 
-        String email = request.getEmail();
-        String code = request.getCode();
-        Boolean success = redUserService.updateEmail(userId, email, code);
-        if (!success) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("The code is incorrect");
+        User userToVerify = redUserService.getUserById(userId);
+
+        if (userToVerify == null) {
+            String message = "User does not exist! Cannot verify user.";
+            MessageResponse messageResponse = MessageResponse.builder()
+                    .message(message)
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
         }
-        return ResponseEntity.ok("Verified Successfully");
+
+        String code = request.getCode();
+        Boolean success = redUserService.verifyCode(userToVerify, code);
+
+        if (!success) {
+            String message = "User verification failed!";
+            MessageResponse messageResponse = MessageResponse.builder()
+                    .message(message)
+                    .build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(messageResponse);
+        } else {
+            String message = "Email verification succeeded!";
+
+            MessageResponse messageResponse = MessageResponse.builder()
+                    .message(message)
+                    .build();
+            return ResponseEntity.status(HttpStatus.OK).body(messageResponse);
+        }
     }
 
 }

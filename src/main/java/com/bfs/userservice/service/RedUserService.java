@@ -41,13 +41,14 @@ public class RedUserService {
     }
 
     @Transactional
-    public Boolean updateEmail(Long userId, String email, String code) {
-        User user = getUserById(userId);
+    public Boolean verifyCode(User user, String code) {
+
         if (!user.getCode().equals(code)) {
             return false;
         }
-        user.setEmail(email);
-        return true;
+
+        return userDao.verifyUser(user);
+
     }
 
 }

@@ -1,4 +1,4 @@
-package com.bfs.userservice.dto;
+package com.bfs.userservice.dto.requests;
 
 import lombok.*;
 
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailRequest {
-    @NotBlank(message = "email cannot be blank")
-    String email;
+public class CodeRequest {
+    @NotBlank(message = "code cannot be blank")
+    String code;
 }

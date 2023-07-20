@@ -86,6 +86,27 @@ public class UserDao extends AbstractHibernateDao<User> {
 
     }
 
+    public Boolean verifyUser(User userToPromote) {
+
+        if (userToPromote == null) {
+
+            return false;
+
+        } else {
+
+            if (userToPromote.getType() != 3) {
+                return false;
+            }
+
+            userToPromote.setType(2);
+            this.getCurrentSession().update(userToPromote);
+
+            return true;
+
+        }
+
+    }
+
     public void updateUserCode(Long userId, String code) {
         Session session = this.getCurrentSession();
         String hql = "UPDATE User SET code = :newCode WHERE userId = :userId";
