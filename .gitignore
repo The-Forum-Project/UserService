@@ -28,3 +28,9 @@ replay_pid*
 
 # Ignore .DS_Store everywhere
 **/.DS_Store
+
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
