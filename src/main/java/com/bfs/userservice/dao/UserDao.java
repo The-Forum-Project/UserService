@@ -38,6 +38,10 @@ public class UserDao extends AbstractHibernateDao<User> {
                 Object oldValue = existingUserWrapper.getPropertyValue(propertyName);
                 Object newValue = newUserWrapper.getPropertyValue(propertyName);
 
+                if (newValue == null) {
+                    continue;
+                }
+
                 if (oldValue != null && newValue != null && !oldValue.equals(newValue)) {
                     existingUserWrapper.setPropertyValue(propertyName, newValue);
                 }
