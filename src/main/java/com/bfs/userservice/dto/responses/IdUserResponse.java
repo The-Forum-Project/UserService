@@ -14,5 +14,6 @@ public class IdUserResponse {
     String firstName;
     String lastName;
     LocalDateTime registrationDate;
+    String imageURL;
 
 }
