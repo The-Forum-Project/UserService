@@ -15,5 +15,5 @@ public class IdUserResponse {
     String lastName;
     LocalDateTime registrationDate;
     String imageURL;
-
+    Long userId;
 }

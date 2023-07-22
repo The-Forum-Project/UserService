@@ -76,6 +76,7 @@ public class UserController {
                             .lastName(user.getLastName())
                             .registrationDate(user.getDateJoined())
                             .imageURL(user.getProfileImageURL())
+                            .userId(id)
                             .build()
             );
         }
