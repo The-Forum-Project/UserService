@@ -4,6 +4,8 @@ import com.bfs.userservice.domain.User;
 import com.bfs.userservice.dto.requests.UpdateRequest;
 import com.bfs.userservice.dto.requests.CodeRequest;
 import com.bfs.userservice.dto.SimpleMessage;
+import com.bfs.userservice.dto.responses.AdminAllUserResponse;
+import com.bfs.userservice.dto.responses.AdminSingleUserResponse;
 import com.bfs.userservice.dto.responses.IdUserResponse;
 import com.bfs.userservice.dto.responses.MessageResponse;
 import com.bfs.userservice.service.RedUserService;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,41 @@ public class UserController {
     public UserController(RedUserService redUserService, RabbitTemplate rabbitTemplate) {
         this.redUserService = redUserService;
         this.rabbitTemplate = rabbitTemplate;
+    }
+
+    @GetMapping()
+    @ResponseBody
+    public ResponseEntity<AdminAllUserResponse> getAllUsers() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
+
+        if (authorities.stream().noneMatch(authority -> authority.getAuthority().equals("admin"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    AdminAllUserResponse.builder()
+                            .message("You are not authorized to access this content")
+                            .build()
+            );
+        }
+
+        List<AdminSingleUserResponse> users = new ArrayList<>();
+        for (User user : redUserService.getAllUsers()) {
+            users.add(AdminSingleUserResponse.builder()
+                    .userId(user.getUserId())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .email(user.getEmail())
+                    .registrationDate(user.getDateJoined())
+                    .active(user.getActive())
+                    .type(user.getType())
+                    .build());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                AdminAllUserResponse.builder()
+                        .message("Successfully retrieved all users")
+                        .users(users)
+                        .build()
+        );
     }
 
     @GetMapping("/{id}")

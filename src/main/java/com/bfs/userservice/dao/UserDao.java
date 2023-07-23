@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.beans.PropertyDescriptor;
+import java.util.List;
 
 @Repository
 public class UserDao extends AbstractHibernateDao<User> {
@@ -17,6 +18,10 @@ public class UserDao extends AbstractHibernateDao<User> {
     @Autowired
     public UserDao() {
         setClazz(User.class);
+    }
+
+    public List<User> getAllUsers() {
+        return this.getAll();
     }
 
     public User getUserById(Long id) {
