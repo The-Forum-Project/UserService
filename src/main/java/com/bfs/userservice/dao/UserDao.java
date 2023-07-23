@@ -125,4 +125,13 @@ public class UserDao extends AbstractHibernateDao<User> {
         query.executeUpdate();
     }
 
+    public void updateUserActive(Long userId, Boolean active) {
+        Session session = this.getCurrentSession();
+        String hql = "UPDATE User SET active = :newActive WHERE userId = :userId";
+        Query query = session.createQuery(hql);
+        query.setParameter("newActive", active);
+        query.setParameter("userId", userId);
+        query.executeUpdate();
+    }
+
 }

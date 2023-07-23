@@ -57,4 +57,9 @@ public class RedUserService {
 
     }
 
+    @Transactional
+    public void updateUserActive(Long userId, Boolean active) {
+        userDao.updateUserActive(userId, active);
+    }
+
 }

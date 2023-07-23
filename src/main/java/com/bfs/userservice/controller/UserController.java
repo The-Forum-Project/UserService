@@ -1,6 +1,7 @@
 package com.bfs.userservice.controller;
 
 import com.bfs.userservice.domain.User;
+import com.bfs.userservice.dto.requests.UpdateActiveRequest;
 import com.bfs.userservice.dto.requests.UpdateRequest;
 import com.bfs.userservice.dto.requests.CodeRequest;
 import com.bfs.userservice.dto.SimpleMessage;
@@ -321,4 +322,44 @@ public class UserController {
         }
     }
 
+    @PostMapping("{id}/updateActive")
+    public ResponseEntity<MessageResponse> updateActive(@PathVariable Long id, @RequestBody UpdateActiveRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
+
+        if (authorities.stream().noneMatch(authority -> authority.getAuthority().equals("admin"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    MessageResponse.builder()
+                            .message("You are not authorized to update the active status of this user")
+                            .build()
+            );
+        }
+
+        User user = redUserService.getUserById(id);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    MessageResponse.builder()
+                            .message("User does not exist!")
+                            .build()
+            );
+        }
+
+        if (user.getType() == 1 || user.getType() == 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    MessageResponse.builder()
+                            .message("You are not authorized to update the active status of this user")
+                            .build()
+            );
+        }
+
+        redUserService.updateUserActive(id, request.getActive());
+
+        String message = "Success! The User's active status has been updated.";
+        MessageResponse messageResponse = MessageResponse.builder()
+                .message(message)
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(messageResponse);
+
+    }
 }
