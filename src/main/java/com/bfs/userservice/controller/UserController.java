@@ -45,15 +45,15 @@ public class UserController {
         List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
 
 
-        if (authorities.stream().noneMatch(authority -> authority.getAuthority().equals("admin"))) {
-            if (!id.equals(authentication.getPrincipal())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                        IdUserResponse.builder()
-                                .message("You are not authorized to access this content")
-                                .build()
-                );
-            }
-        }
+//        if (authorities.stream().noneMatch(authority -> authority.getAuthority().equals("admin"))) {
+//            if (!id.equals(authentication.getPrincipal())) {
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+//                        IdUserResponse.builder()
+//                                .message("You are not authorized to access this content")
+//                                .build()
+//                );
+//            }
+//        }
 
         User user = redUserService.getUserById(id);
         if (user == null) {
