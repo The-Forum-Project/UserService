@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class RedUserService {
@@ -22,6 +23,11 @@ public class RedUserService {
     @Transactional
     public User getUserById(Long id) {
         return userDao.getUserById(id);
+    }
+
+    @Transactional
+    public List<User> getAllUsers() {
+        return userDao.getAllUsers();
     }
 
     @Transactional
@@ -49,6 +55,11 @@ public class RedUserService {
 
         return userDao.verifyUser(user);
 
+    }
+
+    @Transactional
+    public void updateUserActive(Long userId, Boolean active) {
+        userDao.updateUserActive(userId, active);
     }
 
 }

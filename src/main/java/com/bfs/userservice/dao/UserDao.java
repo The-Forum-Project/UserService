@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.beans.PropertyDescriptor;
+import java.util.List;
 
 @Repository
 public class UserDao extends AbstractHibernateDao<User> {
@@ -17,6 +18,10 @@ public class UserDao extends AbstractHibernateDao<User> {
     @Autowired
     public UserDao() {
         setClazz(User.class);
+    }
+
+    public List<User> getAllUsers() {
+        return this.getAll();
     }
 
     public User getUserById(Long id) {
@@ -116,6 +121,15 @@ public class UserDao extends AbstractHibernateDao<User> {
         String hql = "UPDATE User SET code = :newCode WHERE userId = :userId";
         Query query = session.createQuery(hql);
         query.setParameter("newCode", code);
+        query.setParameter("userId", userId);
+        query.executeUpdate();
+    }
+
+    public void updateUserActive(Long userId, Boolean active) {
+        Session session = this.getCurrentSession();
+        String hql = "UPDATE User SET active = :newActive, type = (CASE WHEN :newActive = true THEN 3 ELSE 4 END) WHERE userId = :userId";
+        Query query = session.createQuery(hql);
+        query.setParameter("newActive", active);
         query.setParameter("userId", userId);
         query.executeUpdate();
     }
