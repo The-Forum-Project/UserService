@@ -30,7 +30,7 @@ public class RedUserServiceTest {
     VerificationCodeGenerator verificationCodeGenerator;
 
     private User testUser;
-//    private UserNullable testUserNullable;
+    private UserNullable testUserNullable;
 
     @BeforeEach
     void setUp() {
@@ -42,10 +42,9 @@ public class RedUserServiceTest {
                 .email("super@email.com").password("123").active(true)
                 .dateJoined(dateTime).type(0).code("0")
                 .profileImageURL("https://forumproject.s3.us-east-2.amazonaws.com/default.jpg").build();
-//        testUserNullable = new UserNullable().builder().userId(1l).firstName("Super").lastName("Admin")
-//                .email("super@email.com").password("123").active(true)
-//                .dateJoined(dateTime).type(0).code("0")
-//                .profileImageURL("https://forumproject.s3.us-east-2.amazonaws.com/default.jpg").build();
+        testUserNullable = new UserNullable().builder().userId(1l).firstName("Super").lastName("Admin")
+                .email("super@email.com").password("123")
+                .profileImageURL("https://forumproject.s3.us-east-2.amazonaws.com/default.jpg").build();
     }
 
     @Test
@@ -59,11 +58,11 @@ public class RedUserServiceTest {
 
     @Test
     public void testUpdateUser() {
-//        Mockito.when(userDao.updateUser(Mockito.any(UserNullable.class))).thenReturn(true);
-//
-//        Boolean result = redUserService.updateUser(testUserNullable);
-//
-//        assertTrue(result);
+        Mockito.when(userDao.updateUser(Mockito.any(UserNullable.class))).thenReturn(true);
+
+        Boolean result = redUserService.updateUser(testUserNullable);
+
+        assertTrue(result);
     }
 
     @Test

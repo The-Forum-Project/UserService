@@ -7,6 +7,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserNullable {
 
     private Long userId;
