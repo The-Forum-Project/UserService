@@ -54,6 +54,10 @@ public class UserDao extends AbstractHibernateDao<User> {
 
                 if (!oldValue.equals(newValue)) {
                     existingUserWrapper.setPropertyValue(propertyName, newValue);
+
+                    if (propertyName.equals("email")) {
+                        existingUserWrapper.setPropertyValue("type", 3);
+                    }
                 }
             }
 
