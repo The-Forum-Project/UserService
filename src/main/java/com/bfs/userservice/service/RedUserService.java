@@ -3,6 +3,7 @@ package com.bfs.userservice.service;
 
 import com.bfs.userservice.dao.UserDao;
 import com.bfs.userservice.domain.User;
+import com.bfs.userservice.dto.UserNullable;
 import com.bfs.userservice.util.VerificationCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class RedUserService {
     }
 
     @Transactional
-    public Boolean updateUser(User updatedUser) { return userDao.updateUser(updatedUser); }
+    public Boolean updateUser(UserNullable updatedUser) { return userDao.updateUser(updatedUser); }
 
     @Transactional
     public Boolean deleteUser(User user) { return userDao.deleteUser(user); }

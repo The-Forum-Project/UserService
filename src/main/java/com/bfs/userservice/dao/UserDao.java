@@ -1,6 +1,7 @@
 package com.bfs.userservice.dao;
 
 import com.bfs.userservice.domain.User;
+import com.bfs.userservice.dto.UserNullable;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.hibernate.Session;
@@ -28,7 +29,7 @@ public class UserDao extends AbstractHibernateDao<User> {
         return this.findById(id);
     }
 
-    public Boolean updateUser(User updatedUser) {
+    public Boolean updateUser(UserNullable updatedUser) {
 
         // Load the existing user
         User existingUser = this.getCurrentSession().get(User.class, updatedUser.getUserId());
@@ -37,17 +38,21 @@ public class UserDao extends AbstractHibernateDao<User> {
             BeanWrapper existingUserWrapper = new BeanWrapperImpl(existingUser);
             BeanWrapper newUserWrapper = new BeanWrapperImpl(updatedUser);
 
-            for (PropertyDescriptor descriptor : existingUserWrapper.getPropertyDescriptors()) {
+            for (PropertyDescriptor descriptor : newUserWrapper.getPropertyDescriptors()) {
                 String propertyName = descriptor.getName();
+
+                if (propertyName.equals("class")) {
+                    continue;
+                }
 
                 Object oldValue = existingUserWrapper.getPropertyValue(propertyName);
                 Object newValue = newUserWrapper.getPropertyValue(propertyName);
 
-                if (newValue == null) {
+                if (newValue == "" || newValue == null) {
                     continue;
                 }
 
-                if (oldValue != null && newValue != null && !oldValue.equals(newValue)) {
+                if (!oldValue.equals(newValue)) {
                     existingUserWrapper.setPropertyValue(propertyName, newValue);
                 }
             }

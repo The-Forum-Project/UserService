@@ -1,6 +1,7 @@
 package com.bfs.userservice.controller;
 
 import com.bfs.userservice.domain.User;
+import com.bfs.userservice.dto.UserNullable;
 import com.bfs.userservice.dto.requests.UpdateActiveRequest;
 import com.bfs.userservice.dto.requests.UpdateRequest;
 import com.bfs.userservice.dto.requests.CodeRequest;
@@ -150,7 +151,7 @@ public class UserController {
             }
         }
 
-        User updatedUser = User.builder()
+        UserNullable updatedUser = UserNullable.builder()
                 .userId(id)
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
