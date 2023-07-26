@@ -12,9 +12,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +49,29 @@ public class RedUserServiceTest {
     }
 
     @Test
+    public void testGetAllUsers() {
+        // Given
+        User user1 = new User();
+        user1.setUserId(1L);
+        user1.setFirstName("User1");
+
+        User user2 = new User();
+        user2.setUserId(2L);
+        user2.setFirstName("User2");
+
+        List<User> expectedUsers = Arrays.asList(user1, user2);
+
+        Mockito.when(userDao.getAllUsers()).thenReturn(expectedUsers);
+
+        // When
+        List<User> actualUsers = redUserService.getAllUsers();
+
+        // Then
+        assertEquals(expectedUsers, actualUsers);
+        Mockito.verify(userDao, Mockito.times(1)).getAllUsers();
+    }
+
+    @Test
     public void testGetUserById() {
         Mockito.when(userDao.getUserById(1L)).thenReturn(testUser);
 
@@ -63,6 +87,19 @@ public class RedUserServiceTest {
         Boolean result = redUserService.updateUser(testUserNullable);
 
         assertTrue(result);
+    }
+
+    @Test
+    public void testDeleteUser() {
+
+        Mockito.when(userDao.deleteUser(testUser)).thenReturn(true);
+
+        // When
+        Boolean isDeleted = redUserService.deleteUser(testUser);
+
+        // Then
+        assertTrue(isDeleted);
+        Mockito.verify(userDao, Mockito.times(1)).deleteUser(testUser);
     }
 
     @Test
@@ -83,6 +120,51 @@ public class RedUserServiceTest {
         Boolean result = redUserService.verifyCode(testUser, code);
         assertTrue(result);
         Mockito.verify(userDao, Mockito.times(1)).verifyUser(testUser);
+    }
+
+    @Test
+    public void testVerifyCode() {
+        // Given
+        String code = "123456";
+
+        testUser.setCode(code);
+
+        Mockito.when(userDao.verifyUser(testUser)).thenReturn(true);
+
+        // When
+        Boolean result = redUserService.verifyCode(testUser, code);
+
+        // Then
+        assertTrue(result);
+        Mockito.verify(userDao, Mockito.times(1)).verifyUser(testUser);
+    }
+
+    @Test
+    public void testVerifyCodeWithFail() {
+        // Given
+        String code = "123456";
+        String wrongCode = "654321";
+        testUser.setCode(code);
+
+        // When
+        Boolean result = redUserService.verifyCode(testUser, wrongCode);
+
+        // Then
+        assertFalse(result);
+        Mockito.verify(userDao, Mockito.times(0)).verifyUser(testUser);
+    }
+
+    @Test
+    public void testUpdateUserActive() {
+        // Given
+        Long userId = 1L;
+        Boolean active = true;
+
+        // When
+        redUserService.updateUserActive(userId, active);
+
+        // Then
+        Mockito.verify(userDao, Mockito.times(1)).updateUserActive(userId, active);
     }
 }
 
