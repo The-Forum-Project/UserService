@@ -1,7 +1,8 @@
-package com.bfs.userservice.controller;
+package com.bfs.userservice;
 
 
 import com.bfs.userservice.config.SecurityConfig;
+import com.bfs.userservice.controller.UserController;
 import com.bfs.userservice.dao.UserDao;
 import com.bfs.userservice.domain.User;
 import com.bfs.userservice.dto.UserNullable;
@@ -36,7 +37,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;

@@ -1,8 +1,9 @@
-package com.bfs.userservice.service;
+package com.bfs.userservice;
 
 import com.bfs.userservice.dao.UserDao;
 import com.bfs.userservice.domain.User;
 import com.bfs.userservice.dto.UserNullable;
+import com.bfs.userservice.service.RedUserService;
 import com.bfs.userservice.util.VerificationCodeGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
